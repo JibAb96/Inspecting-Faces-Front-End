@@ -3,9 +3,10 @@ import Navigation from "./components/Navigation/Navigation";
 import tachyons from "tachyons";
 import Logo from "./components/Logo/Logo";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkform";
+import "./App.css"
 function App() {
   return (
-    <div>
+    <div className="App">
       <Navigation/>
       <Logo/>
       <ImageLinkForm/>
