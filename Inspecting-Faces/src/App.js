@@ -47,8 +47,25 @@ class App extends Component{
     super()
     this.state = {
       input: "",
-      imageURL: ""
+      imageURL: "",
+      box: {}
     }
+  }
+
+  calculateFaceLocation = (bottom_row, top_row, right_col, left_col) => {
+    const image = document.getElementById("inputimage");
+    const width = image.width;
+    const height = image.height;
+    return {
+      left_col: left_col * width,
+      top_row: top_row * height,
+      right_col: width - (right_col * width),
+      bottom_row: height - (bottom_row * height)
+    }
+  }
+
+  displayBox = (box) => {
+    this.setState({box: box})
   }
 
   onInputChange = (event) => {
@@ -60,6 +77,7 @@ class App extends Component{
     fetch("https://api.clarifai.com/v2/models/face-detection/outputs", returnClarifaiRequestOption(this.state.input))
     .then(response => response.json())
     .then(result => {
+
         const regions = result.outputs[0].data.regions;
 
         regions.forEach(region => {
@@ -74,9 +92,8 @@ class App extends Component{
                 // Accessing and rounding the concept value
                 const name = concept.name;
                 const value = concept.value.toFixed(4);
-
                 console.log(`${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`);
-                
+                this.displayBox(this.calculateFaceLocation(bottomRow, topRow, rightCol, leftCol))
             });
         });
 
@@ -91,7 +108,7 @@ class App extends Component{
       <Logo/>
       <Rank/>
       <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit}/>
-      <FaceRecognition imageURL={this.state.imageURL}/>
+      <FaceRecognition box={this.state.box} imageURL={this.state.imageURL}/>
     </div>
   );}
 }
