@@ -5,6 +5,8 @@ import Logo from "./components/Logo/Logo";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkform";
 import Rank from "./components/Rank/Rank";
 import FaceRecognition from "./components/Face Recognition/Face-Recognition";
+import SignIn from "./components/SignIn/SignIn"
+import Register from "./components/Register/Register";
 import Particles from "particles-bg"
 import "./App.css"
 
@@ -48,7 +50,8 @@ class App extends Component{
     this.state = {
       input: "",
       imageURL: "",
-      box: {}
+      box: {},
+      route: "signin"
     }
   }
 
@@ -100,15 +103,26 @@ class App extends Component{
     })
     .catch(error => console.log('error', error));
   }
+
+  onRouteChange = (route) => {
+    this.setState({route: route})
+  }
   render() {
   return (
     <div className="App">
       <Particles  type="cobweb" bg={true} color="#ccffff" num={30}/>
-      <Navigation/>
-      <Logo/>
-      <Rank/>
-      <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit}/>
-      <FaceRecognition box={this.state.box} imageURL={this.state.imageURL}/>
+      <Navigation onRouteChange={this.onRouteChange}/>
+      { this.state.route === "home"
+      ? <div> 
+          <Logo/>
+          <Rank/>
+          <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit}/>
+          <FaceRecognition box={this.state.box} imageURL={this.state.imageURL}/>
+        </div>
+      :(this.state.route ==="signin" 
+        ? <SignIn onRouteChange={this.onRouteChange}/>
+        : <Register onRouteChange={this.onRouteChange}/>) 
+              }
     </div>
   );}
 }
