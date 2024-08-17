@@ -1,5 +1,6 @@
 import { React, Component } from "react";
 import Navigation from "./components/Navigation/Navigation";
+// eslint-disable-next-line
 import tachyons from "tachyons";
 import Logo from "./components/Logo/Logo";
 import ImageLinkForm from "./components/ImageLinkForm/ImageLinkform";
@@ -93,12 +94,29 @@ class App extends Component {
     this.setState({ input: event.target.value })
   }
 
-  onSubmit = () => {
+  onPictureSubmit = () => {
     this.setState({ imageURL: this.state.input })
     fetch("https://api.clarifai.com/v2/models/face-detection/outputs", returnClarifaiRequestOption(this.state.input))
       .then(response => response.json())
       .then(result => {
+        if(result){
+          fetch("http://localhost:3000/image", {
+            method: "put",
+            headers: {"Content-type": "application/json"},
+            body: JSON.stringify({
+                id: this.state.user.id
+              })
+            }
+          ).then(response => response.json())
+          .then(count => {
+            this.setState(
+              Object.assign(this.state.user, {entries: count})
 
+            )}
+            
+          )
+
+        }
         const regions = result.outputs[0].data.regions;
 
         regions.forEach(region => {
@@ -108,14 +126,9 @@ class App extends Component {
           const leftCol = boundingBox.left_col.toFixed(3);
           const bottomRow = boundingBox.bottom_row.toFixed(3);
           const rightCol = boundingBox.right_col.toFixed(3);
-
-          region.data.concepts.forEach(concept => {
-            // Accessing and rounding the concept value
-            const name = concept.name;
-            const value = concept.value.toFixed(4);
-            console.log(`${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`);
-            this.displayBox(this.calculateFaceLocation(bottomRow, topRow, rightCol, leftCol))
-          });
+          
+          this.displayBox(this.calculateFaceLocation(bottomRow, topRow, rightCol, leftCol))
+    
         });
 
       })
@@ -131,7 +144,7 @@ class App extends Component {
     this.setState({ route: route })
   }
   render() {
-    const { box, route, isSignedIn, imageURL } = this.state;
+    const { box, route, isSignedIn, imageURL, user } = this.state;
     return (
       <div className="App">
         <Particles type="cobweb" bg={true} color="#ccffff" num={30} />
@@ -139,12 +152,12 @@ class App extends Component {
         {route === "home"
           ? <div>
             <Logo />
-            <Rank />
-            <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit} />
+            <Rank name={user.name} entries={user.entries} />
+            <ImageLinkForm onInputChange={this.onInputChange} onPictureSubmit={this.onPictureSubmit} />
             <FaceRecognition box={box} imageURL={imageURL} />
           </div>
           : (route === "signin"
-            ? <SignIn onRouteChange={this.onRouteChange} />
+            ? <SignIn loadUser={this.loadUser} onRouteChange={this.onRouteChange} />
             : <Register loadUser={this.loadUser} onRouteChange={this.onRouteChange} />)
         }
       </div>

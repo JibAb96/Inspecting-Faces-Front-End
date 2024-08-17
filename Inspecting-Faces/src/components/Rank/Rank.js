@@ -1,13 +1,18 @@
 import React from "react";
 
-const Rank = () => {
+const Rank = ({name, entries}) => {
+    function capitalizeFirstLetter(string) {
+        if (!string) return string;
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+    
     return(
         <div>
             <div className="white f3">
-                {"Jibril your current rank is..."}
-            </div>
+                {`${capitalizeFirstLetter(name)}, your current entry count is ...`}
+                           </div>
             <div className="white f1">
-                {"#5"}
+                {entries}
             </div>
         </div>
     )
