@@ -64,7 +64,7 @@ class App extends Component {
 
   onPictureSubmit = () => {
     this.setState({ imageURL: this.state.input })
-    fetch("http://localhost:3000/imageurl", {
+    fetch("https://inspecting-faces-back-end.onrender.com/imageurl", {
       method: "post",
       headers: {"Content-type": "application/json"},
       body: JSON.stringify({
@@ -74,7 +74,7 @@ class App extends Component {
     ).then(response => response.json())
       .then(result => {
         if(result){
-          fetch("http://localhost:3000/image", {
+          fetch("https://inspecting-faces-back-end.onrender.com/image", {
             method: "put",
             headers: {"Content-type": "application/json"},
             body: JSON.stringify({

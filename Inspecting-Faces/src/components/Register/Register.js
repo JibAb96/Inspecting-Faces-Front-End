@@ -23,7 +23,7 @@ class Register extends Component{
     }
     
     onSubmitRegister = () => {
-        fetch("http://localhost:3000/register", {
+        fetch("https://inspecting-faces-back-end.onrender.com/register", {
             method: "post",
             headers: {"Content-type": "application/json"},
             body: JSON.stringify({
